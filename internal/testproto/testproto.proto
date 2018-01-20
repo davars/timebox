@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package testproto;
+
+import "google/protobuf/timestamp.proto";
+
+// OAuthState contains data associated with a single oauth flow (currently just the url to redirect the user to after
+// authentication completes)
+message OAuthState {
+    string redirect_url = 1;
+}
+
+// Session contains data associated with a single user: who that user is and whether they're authenticated & authorized
+message Session {
+    string user = 1;
+    google.protobuf.Timestamp expires_at = 2;
+    bool authorized = 3;
+}
