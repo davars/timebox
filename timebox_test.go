@@ -58,17 +58,18 @@ func TestSealAndReopen(t *testing.T) {
 	}
 
 	for name, test := range tests {
-		t.Log(name)
-		sealed, err := b.Seal(test.message, 0)
-		assert.NoError(t, err)
-		assert.Equal(t, test.sealed, sealed)
+		t.Run(name, func(t *testing.T) {
+			sealed, err := b.Seal(test.message, 0)
+			assert.NoError(t, err)
+			assert.Equal(t, test.sealed, sealed)
 
-		v := reflect.New(reflect.TypeOf(test.message).Elem()).Interface().(proto.Message)
-		assert.True(t, b.Open(sealed, v))
+			v := reflect.New(reflect.TypeOf(test.message).Elem()).Interface().(proto.Message)
+			assert.True(t, b.Open(sealed, v), "message opens")
 
-		if !reflect.DeepEqual(v, test.message) {
-			t.Errorf("got %+v, want %+v", v, test.message)
-		}
+			if !proto.Equal(v, test.message) {
+				t.Errorf("got %+v, want %+v", v, test.message)
+			}
+		})
 	}
 }
 
@@ -99,12 +100,13 @@ func TestSealFailures(t *testing.T) {
 	}()
 
 	for name, test := range tests {
-		t.Log(name)
-		Clock = fakeclock.NewFakeClock(test.now)
-		sealed, err := b.Seal(test.message, time.Duration(test.maxAge)*time.Second)
-		assert.Error(t, err)
-		t.Log(err)
-		assert.Equal(t, "", sealed)
+		t.Run(name, func(t *testing.T) {
+			Clock = fakeclock.NewFakeClock(test.now)
+			sealed, err := b.Seal(test.message, time.Duration(test.maxAge)*time.Second)
+			assert.Error(t, err)
+			t.Log(err)
+			assert.Equal(t, "", sealed)
+		})
 	}
 }
 
@@ -147,10 +149,11 @@ func TestOpenFailures(t *testing.T) {
 	}()
 
 	for name, test := range tests {
-		t.Log(name)
-		Clock = fakeclock.NewFakeClock(test.now)
+		t.Run(name, func(t *testing.T) {
+			Clock = fakeclock.NewFakeClock(test.now)
 
-		v := &empty.Empty{}
-		assert.False(t, b.Open(test.sealed, v))
+			v := &empty.Empty{}
+			assert.False(t, b.Open(test.sealed, v))
+		})
 	}
 }

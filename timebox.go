@@ -10,8 +10,8 @@ import (
 
 	"github.com/davars/timebox/internal/timebox"
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"golang.org/x/crypto/nacl/secretbox"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const nonceLength = 24
@@ -62,11 +62,11 @@ func (b *Boxer) Seal(message proto.Message, maxAge time.Duration) (string, error
 		return "", err
 	}
 
-	expires, err := ptypes.TimestampProto(Clock.Now().Add(maxAge))
+	expires := timestamppb.New(Clock.Now().Add(maxAge))
+	err = expires.CheckValid()
 	if err != nil {
 		return "", err
 	}
-
 	boxed, err := proto.Marshal(&timebox.TimeBox{Payload: marshaled, NotAfter: expires})
 	if err != nil {
 		return "", err
@@ -77,7 +77,7 @@ func (b *Boxer) Seal(message proto.Message, maxAge time.Duration) (string, error
 	return base64.RawURLEncoding.EncodeToString(encrypted), nil
 }
 
-// Open takes an encrpyted timebox and attempts to decrypt and unmarshal it into output. If all operations succeed
+// Open takes an encrypted timebox and attempts to decrypt and unmarshal it into output. If all operations succeed
 // (decryption, verifying expiration, unmarshalling), Open returns true.  Otherwise, Open returns false.
 func (b *Boxer) Open(sealed string, output proto.Message) bool {
 	encrypted, err := base64.RawURLEncoding.DecodeString(sealed)
@@ -98,12 +98,11 @@ func (b *Boxer) Open(sealed string, output proto.Message) bool {
 		return false
 	}
 
-	notAfter, err := ptypes.Timestamp(box.NotAfter)
-	if err != nil {
+	if !box.NotAfter.IsValid() {
 		return false
 	}
 
-	if Clock.Now().After(notAfter) {
+	if Clock.Now().After(box.NotAfter.AsTime()) {
 		return false
 	}
 

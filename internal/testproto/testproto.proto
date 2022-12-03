@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package testproto;
 
+option go_package = "github.com/davars/timebox/internal/testproto";
+
 import "google/protobuf/timestamp.proto";
 
 // OAuthState contains data associated with a single oauth flow (currently just the url to redirect the user to after
