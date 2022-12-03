@@ -7,6 +7,7 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/stretchr/testify v1.8.1
 	golang.org/x/crypto v0.3.0
+	google.golang.org/protobuf v1.28.0
 )
 
 require (
@@ -17,6 +18,5 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/tedsuo/ifrit v0.0.0-20220120221754-dd274de71113 // indirect
 	golang.org/x/sys v0.2.0 // indirect
-	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

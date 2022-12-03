@@ -9,9 +9,9 @@ import (
 	"code.cloudfoundry.org/clock"
 	"code.cloudfoundry.org/clock/fakeclock"
 	"github.com/davars/timebox/internal/testproto"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func TestSealAndReopen(t *testing.T) {
@@ -25,7 +25,7 @@ func TestSealAndReopen(t *testing.T) {
 		sealed  string
 	}{
 		"empty": {
-			message: &empty.Empty{},
+			message: &emptypb.Empty{},
 			sealed:  "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA_lhDK9z2adhnXlIn15w9asw1s39sPQ20FSEII0M",
 		},
 		"OAuthState empty": {
@@ -83,7 +83,7 @@ func TestSealFailures(t *testing.T) {
 			message: nil,
 		},
 		"future": {
-			message: &empty.Empty{},
+			message: &emptypb.Empty{},
 			now:     time.Date(10000, 1, 1, 0, 0, 0, 0, time.UTC),
 		},
 	}
@@ -152,7 +152,7 @@ func TestOpenFailures(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			Clock = fakeclock.NewFakeClock(test.now)
 
-			v := &empty.Empty{}
+			v := &emptypb.Empty{}
 			assert.False(t, b.Open(test.sealed, v))
 		})
 	}

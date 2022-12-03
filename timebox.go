@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/davars/timebox/internal/timebox"
-	"github.com/golang/protobuf/proto"
 	"golang.org/x/crypto/nacl/secretbox"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -57,6 +57,9 @@ func New(secret string) (*Boxer, error) {
 
 // Seal encrypts the given message in a box that expires after maxAge has elapsed
 func (b *Boxer) Seal(message proto.Message, maxAge time.Duration) (string, error) {
+	if message == nil {
+		return "", fmt.Errorf("message cannot be nil")
+	}
 	marshaled, err := proto.Marshal(message)
 	if err != nil {
 		return "", err
