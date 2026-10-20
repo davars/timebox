@@ -6,8 +6,6 @@ import (
 	"reflect"
 	"time"
 
-	"code.cloudfoundry.org/clock"
-	"code.cloudfoundry.org/clock/fakeclock"
 	"github.com/davars/timebox/internal/testproto"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
@@ -15,9 +13,9 @@ import (
 )
 
 func TestSealAndReopen(t *testing.T) {
-	Clock = fakeclock.NewFakeClock(time.Time{})
+	now = func() time.Time { return time.Time{} }
 	defer func() {
-		Clock = clock.NewClock()
+		now = time.Now
 	}()
 
 	tests := map[string]struct {
@@ -96,12 +94,12 @@ func TestSealFailures(t *testing.T) {
 	}
 
 	defer func() {
-		Clock = clock.NewClock()
+		now = time.Now
 	}()
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			Clock = fakeclock.NewFakeClock(test.now)
+			now = func() time.Time { return test.now }
 			sealed, err := b.Seal(test.message, time.Duration(test.maxAge)*time.Second)
 			assert.Error(t, err)
 			t.Log(err)
@@ -145,12 +143,12 @@ func TestOpenFailures(t *testing.T) {
 	}
 
 	defer func() {
-		Clock = clock.NewClock()
+		now = time.Now
 	}()
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			Clock = fakeclock.NewFakeClock(test.now)
+			now = func() time.Time { return test.now }
 
 			v := &emptypb.Empty{}
 			assert.False(t, b.Open(test.sealed, v))
