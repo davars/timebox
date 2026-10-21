@@ -65,7 +65,7 @@ func (b *Boxer) Seal(message proto.Message, maxAge time.Duration) (string, error
 		return "", err
 	}
 
-	expires := timestamppb.New(Clock.Now().Add(maxAge))
+	expires := timestamppb.New(now().Add(maxAge))
 	err = expires.CheckValid()
 	if err != nil {
 		return "", err
@@ -105,7 +105,7 @@ func (b *Boxer) Open(sealed string, output proto.Message) bool {
 		return false
 	}
 
-	if Clock.Now().After(box.NotAfter.AsTime()) {
+	if now().After(box.NotAfter.AsTime()) {
 		return false
 	}
 

@@ -1,5 +1,6 @@
 package timebox
 
-import "code.cloudfoundry.org/clock"
+import "time"
 
-var Clock = clock.NewClock()
+// now is swapped out in tests to control the current time.
+var now = time.Now

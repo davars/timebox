@@ -3,7 +3,6 @@ module github.com/davars/timebox
 go 1.25.0
 
 require (
-	code.cloudfoundry.org/clock v1.61.0
 	github.com/golang/protobuf v1.5.4
 	github.com/stretchr/testify v1.8.1
 	golang.org/x/crypto v0.52.0
