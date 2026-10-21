@@ -1,6 +1,6 @@
 module github.com/davars/timebox
 
-go 1.25.0
+go 1.27.3
 
 require (
 	github.com/golang/protobuf v1.5.4
